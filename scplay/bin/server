@@ -1,0 +1,59 @@
+#!/usr/bin/env node
+
+var express = require('express');
+var app = express();
+app.use(express.static(__dirname + '/public'));
+app.listen(8099);
+
+var http = require('http'),
+    url = require("url"),
+    fs = require('fs'),
+    mime = require('mime'),
+    responder;
+
+http.createServer(function (request, res) {
+ 
+  var uri = url.parse(request.url).pathname; 
+  if(uri.indexOf("auth") !== -1) {
+    loadFile("templates/main.htm", res, function(response, data) {
+    	responder(response, data);
+    });
+  } else if (uri.indexOf("resources/") !== -1) {
+  	var resource = uri.split("/")[2];
+  	loadFile("resources/"+resource, res, function(response, data) {
+    	responder(response, data);
+    });
+  
+  } else if (uri.indexOf("favicon") !== -1) {
+  	var resource = uri.split("/")[2];
+  	res.end();
+  
+  } else {
+    loadFile("templates/stacks.htm", res, function(response, data) {
+    	responder(response, data);
+    });
+  }
+}).listen(8080);
+
+responder = function(response, data) {
+	data.data = data.data + "\n";
+	
+	if(data.mime.indexOf("image") !== -1) {
+		response.writeHead(200, {'Content-Type': data.mime});
+		response.end(data.data, 'binary');
+	} else {
+		response.writeHead(200, {'Content-Type': data.mime,'Content-Length': Buffer.byteLength(data.data)});
+		response.end(data.data);
+	}
+	console.log("response sent " + data.mime);
+};
+
+loadFile = function(file, response, callback) {
+	
+	fs.readFile(file, function (err, data) {
+		callback(response, {data:data, mime : mime.lookup(file)});
+	});
+
+};
+
+console.log('> http server has started on port 8080');

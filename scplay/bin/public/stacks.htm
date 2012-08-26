@@ -1,0 +1,471 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+	<head>
+	
+	<title>stacks</title>
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js"></script>
+	<script type="text/javascript" src="/js/jquery.mousewheel.min.js"></script>
+	<script type="text/javascript" src="/js/jquery-ui-1.8.23.custom.min.js"></script>
+	<script src="http://connect.soundcloud.com/sdk.js"></script>
+	<style>
+		
+		body, html {
+			
+			background-size: -10% auto;
+			margin: 0;
+			padding: 0;
+			
+		}
+		
+		input, #autoComplete {
+			
+			border: 1px dashed #999;
+			font-size: 14px;
+			width: 200px;
+			box-shadow: 1px 1px 18px #888888;
+			
+		}
+		
+		#autoComplete {
+			
+			background-color: #fff;
+			font-size: 14px;
+			max-height : 200px;
+			overflow-y: scroll;
+			width: 200px;
+			box-shadow: 1px 1px 18px #888888;
+			
+		}
+		
+		#autoComplete ul {
+			margin: 5px;
+			padding: 0;
+		}
+		
+		#autoComplete li {
+			
+			display: block;
+			margin: 0;
+			padding: 0;
+		}
+		
+		.addIcon {
+			color: blue;		
+			cursor: pointer;
+			font-size: 14px;
+			font-weight: bold;
+			padding: 8px;
+		
+		}
+	
+		
+	</style>
+	
+	</head>
+	
+	<body>
+		
+
+		<script type="text/javascript">
+			
+			$(function() {
+			
+			
+				var canvas,
+					cubeUtils,
+					cube,
+					currentMousePos = {},
+					cubes = [];
+				
+				var canvasRender = $("<canvas></canvas>", {
+					id : "extrusion"
+				}).attr({height : $(window).height(), width: $(window).width()}).appendTo(document.body);
+				
+				$(document).mousemove(function(event) {
+					currentMousePos = {
+						x: event.pageX,
+						y: event.pageY
+					};
+				});
+				
+				$(canvasRender).click(function(event) {
+					var gridPos = getTileFromMousePos(event.pageX, event.pageY, canvas.getImageData(event.pageX, event.pageY, 1, 1).data);
+					createCube(gridPos);
+					createSearchInput(gridPos);
+					
+					
+				});
+				
+				var createCube = function(gridPos) {
+				
+					cubes.push(new cube(gridPos.X, gridPos.Y, cubeUtils));
+					renderer.objectGraph["square"+cubes.length] = cubes[cubes.length-1];
+					
+				};
+				
+				var createSearchInput = function(gridPos) {
+				
+					$("<input />", {
+						type : "text",
+						placeholder : "search for track",
+						css : {
+							position: "absolute",
+							top: (gridPos.Y-3)+"px",
+							left: (gridPos.X+85)+"px"
+						}
+					}).appendTo("body")
+					.focus()
+					.keypress(function(event) {
+						var searchPhrase = $(this).val();
+						var inputField = $(this);
+						SC.get('/tracks', { q: searchPhrase }, function(tracks) {
+  								var autoComplete = $("#autoComplete");
+  								if(autoComplete.length === 0) {
+									autoComplete = $("<div/>",
+										{ id: "autoComplete",
+										   css : {
+												position : "absolute",
+												top : inputField.offset().top+inputField.height(),
+												left :  inputField.offset().left
+										   
+										   }
+										}).appendTo("body");
+  								}
+  								var trackList = "<ul>";
+  								for(var i =0; i < tracks.length; i++) {
+  									trackList += "<li>"+tracks[i].title+"</li>";
+  								}
+  								trackList += "</ul>";
+  								autoComplete.html(trackList).click(function(event) {
+  									inputField.val(event.target.innerText)
+  									.css({
+  										backgroundColor: "transparent",
+  										boxShadow : "none",
+  										border : "none",
+  										fontSize: "12px",
+  										color: "#666"
+  									});
+  									autoComplete.remove();
+  									createAddTrack(gridPos);
+  								});
+						});
+						
+					});
+					
+				
+				};
+				
+				var createAddTrack = function(gridPos) {
+				
+					$("<div/>", {
+					
+						"class" : "addIcon",
+						css : {
+							position: "absolute",
+							top: (gridPos.Y-40)+"px",
+							left: (gridPos.X+30)+"px"
+						},
+						title : "add track to playlist"
+						
+					}).text("+").appendTo("body").click(function() {
+						$(this).remove();
+						var newGridPos = { X : gridPos.X, Y : gridPos.Y-20};
+						createCube(newGridPos);
+						createSearchInput(newGridPos);
+					});
+				
+				};
+				
+				$(canvasRender).bind("mousewheel", function(event, delta) {
+					
+					renderer.zoom(delta/120, event.clientX, event.clientY);
+					
+				});
+				
+				SC.initialize({
+					client_id: "29a8c4627dba0eae2bdfac4552946526",
+					redirect_uri: "http://scplay.sks.jit.su/auth/"
+				});
+				
+				canvas = $(canvasRender).get(0).getContext("2d");
+				
+				cubeUtils = function() {
+				
+					var extrudePath,
+						paintOnCanvas,
+						forEachVector,
+						forEachVectorPair,
+						createSquareVectors;
+					
+					extrudePath = function(path, extrusion) {
+						var paths = [];
+						paths.unshift({vectors : path, intensity : 0});
+						
+						
+						forEachVectorPair(path, function(x, y, x1, y1) {
+							if(x !== x1) {
+								var newWall = {
+									vectors : [],
+									intensity : 0.4
+								};
+								newWall.vectors.push(x, y, x1, y1, x1, y1-extrusion, x, y-extrusion);
+								paths.unshift(newWall);
+							}
+						});
+						var vectorCeiling = {
+							vectors : [],
+							intensity : 0.9
+						};
+						forEachVector(path, function(x, y) {
+							vectorCeiling.vectors.push(x, y-extrusion);
+						});
+						paths.unshift(vectorCeiling);
+						
+						return paths;
+					};
+				
+					paintOnCanvas = function(paths, baseColor, canvas) {
+					
+						var pathCount = paths.length;
+						while(pathCount--) {
+						
+							canvas.beginPath();
+							forEachVector(paths[pathCount].vectors, function(x, y) {
+								canvas.lineTo(x, y);
+							});
+							canvas.lineWidth = 1;
+							canvas.fillStyle = "rgba("+baseColor[0]
+							+","+baseColor[1]
+							+","+baseColor[2]
+							+","+paths[pathCount].intensity
+							+")";
+							canvas.stroke();
+							canvas.fill();
+						
+						};
+					
+					};
+				
+					forEachVector = function(vectorArray, action) {
+					
+						for(var i = 0; i < vectorArray.length; i = i+2) {
+							action(vectorArray[i], vectorArray[i+1]);
+						}
+					
+					};
+				
+					forEachVectorPair = function(vectorArray, action) {
+					
+						for(var i = 0; i < vectorArray.length; i = i+2) {
+							if((i+2) === vectorArray.length) {
+								action(vectorArray[i], vectorArray[i+1], vectorArray[0], vectorArray[1]);
+							} else {
+								action(vectorArray[i], vectorArray[i+1], vectorArray[i+2], vectorArray[i+3]);
+							}
+						}
+					
+					};
+					
+					createSquareVectors = function(oX, oY) {
+					
+						var tileWidth = 76;
+						var tileHeight = 38;
+						return [
+							(tileWidth / 2)+oX,
+							oY,
+							oX,
+							(tileHeight / 2)+oY,
+							(tileWidth / 2)+oX,
+							tileHeight+oY,
+							tileWidth+oX,
+							(tileHeight / 2)+oY,
+							(tileWidth / 2)+oX,
+							oY];
+					
+					};
+					
+					return {
+					
+						extrudePath : extrudePath,
+						paintOnCanvas : paintOnCanvas,
+						createSquareVectors : createSquareVectors
+					
+					};
+				}();
+				
+				cube = function(oX, oY, cubeUtils) {
+					
+					var baseVectors = cubeUtils.createSquareVectors(oX, oY),
+						baseColor = [108,132,173],
+						height = 20;
+					
+					return function(canvas) {
+						cubeUtils.paintOnCanvas(cubeUtils.extrudePath(baseVectors, height), baseColor, canvas);
+						
+					};
+				
+				};
+				
+				var gridSquareHighLight = function(canvas) {
+				
+					var x = currentMousePos.x || 0,
+					y = currentMousePos.y || 0;
+					
+					
+					
+					var gridPos = getTileFromMousePos(x, y, canvas.getImageData(x, y, 1, 1).data);
+					
+   					var squareVectors = cubeUtils.createSquareVectors(gridPos.X, gridPos.Y);
+   					canvas.moveTo(squareVectors[0], squareVectors[1]);
+					canvas.lineTo(squareVectors[2], squareVectors[3]);
+					canvas.lineTo(squareVectors[4], squareVectors[5]);
+					canvas.lineTo(squareVectors[6], squareVectors[7]);
+					canvas.lineTo(squareVectors[8], squareVectors[9]);
+					canvas.strokeStyle = "#00f";
+					canvas.stroke();
+				
+				};
+				
+				var getTileFromMousePos = function(x, y, placeOnTile) {
+				
+					var gridPos = {};
+					gridPos.X = Math.floor(x/76);
+					gridPos.Y = Math.floor(y/38);
+					var t1 = placeOnTile[0]+"-"+placeOnTile[1]+"-"+placeOnTile[2];
+					var TOPLEFT = "254-255-255",
+						TOPRIGHT = "255-254-255",
+						BOTTOMLEFT = "255-255-254",
+						BOTTOMRIGHT = "254-255-254";
+					if(t1 === TOPLEFT) {
+						gridPos.X = gridPos.X-.5;
+						gridPos.Y = gridPos.Y-.5;
+					} else if (t1 === TOPRIGHT) {
+						gridPos.X = gridPos.X+.5;
+						gridPos.Y = gridPos.Y-.5;
+					} else if (t1 === BOTTOMLEFT) {
+						gridPos.X = gridPos.X-0.5;
+						gridPos.Y = gridPos.Y+0.5;
+					} else if (t1 === BOTTOMRIGHT) {
+						gridPos.X = gridPos.X+.5;
+						gridPos.Y = gridPos.Y+.5;
+					}
+					gridPos.X = gridPos.X*76;
+					gridPos.Y = gridPos.Y*38;
+					return gridPos;
+				
+				};
+				
+				var backgroundGrid = function(canvas) {
+				
+					var grid = new Image(),
+						pattern;
+					grid.src = '/images/gridBG2.png';
+					grid.onload = function(){
+					
+						pattern = canvas.createPattern(grid,'repeat');
+					
+					};
+					  
+					return function(canvas, width, height) {
+					
+						if(grid) {
+						
+							canvas.fillStyle = pattern;
+							canvas.fillRect(0, 0, width, height); 
+							
+						}
+					
+					};
+				
+				};
+				
+				renderer = function(canvas) {
+					
+					var objectGraph = {},
+						renderInterval = 100,
+						canvasHeight = $(window).height(),
+						canvasWidth = $(window).width(),
+						renderLoop,
+						renderInterval,
+						start,
+						zoom,
+						scale = 1,
+						originX = 0,
+						originY = 0;
+					
+					renderLoop = function() {
+					
+						canvas.clearRect(0, 0, canvasWidth/scale, canvasHeight/scale);
+						for(var renderObject in objectGraph) {
+							
+							canvas.beginPath();
+							objectGraph[renderObject](canvas, canvasWidth/scale, canvasHeight/scale);
+						}
+					
+					};
+					
+					start = function() {
+						
+						renderInterval = setInterval(renderLoop, renderInterval);
+					
+					};
+					
+					stop = function() {
+					
+						canvas.clearRect(0, 0, canvasWidth, canvasHeight);
+						clearInterval(renderInterval);
+					
+					};
+					
+					zoom = function(zoomLevel, x, y) {
+						
+						console.log("set zoom", scale);
+						var zoom = 1 + zoomLevel/1.5;
+						/*
+						canvas.translate(
+							originX,
+							originY
+						);
+						*/
+						canvas.scale(zoom,zoom);
+						/*
+						canvas.translate(
+							-( x / scale + originX - x / ( scale * zoom ) ),
+							-( y / scale + originY - y / ( scale * zoom ) )
+						);
+						*/
+						originX = ( x / scale + originX - x / ( scale * zoom ) );
+						originY = ( y / scale + originY - y / ( scale * zoom ) );
+						scale *= zoom;
+						
+					};
+					
+					return {
+					
+						objectGraph : objectGraph,
+						start : start,
+						stop: stop,
+						zoom : zoom
+					
+					};
+					
+				}(canvas);
+				
+				renderer.objectGraph.backgroundGrid = backgroundGrid(canvas);
+				
+				renderer.objectGraph.highLight = gridSquareHighLight;
+				
+				renderer.start();
+				
+				//renderer.stop();
+				
+				
+				
+			
+			});
+			
+		</script>
+	</body>
+</html>

@@ -1,0 +1,194 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>SoundCloud playlist manager</title>
+	
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js" type="text/javascript"></script>
+	<!-- script src="backbone-min.js" type="text/javascript"></script -->
+	<script src="http://connect.soundcloud.com/sdk.js"></script>
+	<style>
+		html, body, div, span, applet, object, iframe,
+		h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+		a, abbr, acronym, address, big, cite, code,
+		del, dfn, em, img, ins, kbd, q, s, samp,
+		small, strike, strong, sub, sup, tt, var,
+		b, u, i, center,
+		dl, dt, dd, ol, ul, li,
+		fieldset, form, label, legend,
+		table, caption, tbody, tfoot, thead, tr, th, td,
+		article, aside, canvas, details, embed, 
+		figure, figcaption, footer, header, hgroup, 
+		menu, nav, output, ruby, section, summary,
+		time, mark, audio, video {
+			margin: 0;
+			padding: 0;
+			border: 0;
+			font-size: 100%;
+			font: inherit;
+			vertical-align: baseline;
+		}
+		/* HTML5 display-role reset for older browsers */
+		article, aside, details, figcaption, figure, 
+		footer, header, hgroup, menu, nav, section {
+			display: block;
+		}
+		body {
+			line-height: 1;
+		}
+		ol, ul {
+			list-style: none;
+		}
+		blockquote, q {
+			quotes: none;
+		}
+		blockquote:before, blockquote:after,
+		q:before, q:after {
+			content: '';
+			content: none;
+		}
+		table {
+			border-collapse: collapse;
+			border-spacing: 0;
+		}
+		
+		body {
+			color: #fff;
+			font-family : helvetica;
+			margin: 0;
+			overflow: hidden;
+			padding: 0;
+			
+			}
+			
+		.leftbar {
+			background: #DAE8F6;
+			height: 100%;
+			position: fixed;
+			width: 20%;
+		}
+		
+		.playlists {
+			
+			padding: 60px 5px 0 10px;
+			
+		}
+		
+		.playlistTitle {
+			font-size: 1em;
+        	position: relative;
+       		color: #222;
+       		left: 10px;
+        	text-shadow: 0 1px rgba(255,255,255,.8);
+        	background-color: #ccc;
+        	text-align: right;
+			padding: 10px 30px 10px 0; 
+			background-image: -moz-linear-gradient(left,#888, rgba(255,255,255,0));
+			background-image: -webkit-linear-gradient(left,#888, rgba(255,255,255,0));
+			background-image: -o-linear-gradient(left,#888, rgba(255,255,255,0));
+			background-image: -ms-linear-gradient(left,#888, rgba(255,255,255,0));
+			background-image: linear-gradient(left,#888, rgba(255,255,255,0));
+		}
+		
+		.playlistTitle input {
+			background: transparent;
+			border: 0;
+			color: #fff;
+			font-size: 1em;
+			margin: 0;
+			padding: 5px 10px;
+			width: 100%;
+		}
+		
+		.playlistTitle input::-webkit-input-placeholder {
+    		color: #fff;
+		}
+		
+		.playlistTitle:before, .playlistTitle:after
+    	{
+    		content: '';
+        	position: absolute;
+        	border-style: solid;
+        	border-color: transparent;
+        	bottom: -6px;
+    	}
+    	
+    	.playlistTitle:after
+    	{
+        	border-width: 0 0 6px 6px;
+        	border-left-color: #555;
+        	right: 0;
+    	}
+    	
+    	.content 
+    	{
+    		
+    		height: 100%;
+    		padding: 0 0 0 20%;
+    		width: 5000px;
+    	}
+    	
+    	.timeline {
+    		float: left;
+    		margin-left: 5px;
+    	}
+    	
+    	.timeline li {
+    		border-left: 1px solid #ccc;
+    		color: #ccc;
+    		float: left;
+    		font-size: 0.8em;
+    		height: 5%;
+    		padding-left: 5px;
+    		width: 100px;
+    	}
+		
+    
+	</style>
+	
+</head>
+  <body>
+ 	<div class="leftbar">
+ 		<ul class="playlists">
+ 			<li class="playListTitle"><input placeholder="My new playlist" class="newPlayList"/></li>
+ 		</ul>
+ 	</div>
+ 	<div class="content">
+ 		<ul class="timeline">
+ 			<li>start</li>
+ 			<li>1 min</li>
+ 			<li>2 min</li>
+ 			<li>3 min</li>
+ 			<li>4 min</li>
+ 			<li>5 min</li>
+ 			<li>6 min</li>
+ 			<li>7 min</li>
+ 			<li>8 min</li>
+ 			<li>9 min</li>
+ 			<li>10 min</li>
+ 			<li>11 min</li>
+ 			<li>12 min</li>
+ 			<li>13 min</li>
+ 			<li>14 min</li>
+ 		</ul>
+ 	
+ 	</div>
+ 	<script>
+ 	
+ 	$(function() {
+ 	
+ 		$(".playlist").keyup(function(event) {
+ 			var RETURN = 13;
+ 			if(event.keyCode = RETURN) {
+ 				
+ 			}
+ 		});
+ 	
+ 	});
+ 	
+	</script>
+ 	
+ </body>
+</html>
