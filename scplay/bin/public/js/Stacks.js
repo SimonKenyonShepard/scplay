@@ -1,3 +1,4 @@
+'use strict'
 require(["renderer", "cubeUtils", "stacksCanvas"], function(renderer, cubeUtils, stacksCanvas) {
 
 	var canvas = stacksCanvas.get(0).getContext("2d"),

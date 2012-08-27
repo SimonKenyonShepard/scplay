@@ -1,3 +1,4 @@
+'use strict'
 define(["stacksCanvas"], function(stacksCanvas) {
 	
 	var objectGraph = {},
@@ -8,6 +9,7 @@ define(["stacksCanvas"], function(stacksCanvas) {
 		renderLoop,
 		renderInterval,
 		start,
+		stop,
 		zoom,
 		scale = 1,
 		originX = 0,
