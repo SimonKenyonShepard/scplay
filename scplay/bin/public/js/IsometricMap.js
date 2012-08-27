@@ -1,11 +1,18 @@
+'use strict'
 require(["renderer", "cubeUtils", "stacksCanvas"], function(renderer, cubeUtils, stacksCanvas) {
 
-	currentMousePos = {};
+	var currentMousePos = {};
 	var canvas = stacksCanvas.get(0).getContext("2d");
-	$(stacksCanvas).bind("mousewheel", function(event, delta) {
+	stacksCanvas.bind("mousewheel", function(event, delta) {
 		
 		renderer.zoom(delta/120, event.clientX, event.clientY);
 					
+	});
+	stacksCanvas.mousemove(function(event) {
+		currentMousePos = {
+			x: event.pageX,
+			y: event.pageY
+		};
 	});
 	var backgroundGrid = function(canvas) {
 	

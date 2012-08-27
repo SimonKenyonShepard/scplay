@@ -7,12 +7,6 @@ define(function() {
 		width: $(window).width()
 	}).appendTo(document.body);
 
-	canvasRender.mousemove(function(event) {
-		currentMousePos = {
-			x: event.pageX,
-			y: event.pageY
-		};
-	});
 	return canvasRender;
 	
 });
