@@ -30,7 +30,6 @@ define(function() {
 			vectorCeiling.vectors.push(x, y-extrusion);
 		});
 		paths.unshift(vectorCeiling);
-		
 		return paths;
 	};
 
