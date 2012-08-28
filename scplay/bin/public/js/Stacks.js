@@ -16,6 +16,7 @@ require(["renderer", "cubeUtils", "stacksCanvas"], function(renderer, cubeUtils,
 	stacksCanvas.click(function(event) {
 		var gridPos = cubeUtils.getTileFromMousePos(event.pageX, event.pageY, canvas.getImageData(event.clientX, event.clientY, 1, 1).data);
 		createCube(gridPos);
+		$(document).trigger("newStack");
 		createSearchInput(gridPos);	
 	});
 	
@@ -23,10 +24,14 @@ require(["renderer", "cubeUtils", "stacksCanvas"], function(renderer, cubeUtils,
 		
 		var baseVectors = cubeUtils.createSquareVectors(oX, oY),
 			baseColor = [108,132,173],
-			height = 20;
+			opacity = 0,
+			height = 1;
 		
 		return function(canvas) {
-			cubeUtils.paintOnCanvas(cubeUtils.extrudePath(baseVectors, height), baseColor, canvas);
+			if(opacity < 1) {
+				opacity = opacity+0.25;
+			}
+			cubeUtils.paintOnCanvas(cubeUtils.extrudePath(baseVectors, height), baseColor, canvas, opacity);
 			
 		};
 	

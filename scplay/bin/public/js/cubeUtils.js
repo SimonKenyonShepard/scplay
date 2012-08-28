@@ -34,9 +34,10 @@ define(function() {
 		return paths;
 	};
 
-	paintOnCanvas = function(paths, baseColor, canvas) {
+	paintOnCanvas = function(paths, baseColor, canvas, opacity) {
 	
 		var pathCount = paths.length;
+		opacity = opacity || 1;
 		while(pathCount--) {
 		
 			canvas.beginPath();
@@ -47,7 +48,7 @@ define(function() {
 			canvas.fillStyle = "rgba("+baseColor[0]
 			+","+baseColor[1]
 			+","+baseColor[2]
-			+","+paths[pathCount].intensity
+			+","+paths[pathCount].intensity*opacity
 			+")";
 			canvas.stroke();
 			canvas.fill();
