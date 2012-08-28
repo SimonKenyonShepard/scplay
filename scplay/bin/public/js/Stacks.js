@@ -14,7 +14,7 @@ require(["renderer", "cubeUtils", "stacksCanvas"], function(renderer, cubeUtils,
 	});
 	
 	stacksCanvas.click(function(event) {
-		var gridPos = cubeUtils.getTileFromMousePos(event.pageX, event.pageY, canvas.getImageData(event.pageX, event.pageY, 1, 1).data);
+		var gridPos = cubeUtils.getTileFromMousePos(event.pageX, event.pageY, canvas.getImageData(event.clientX, event.clientY, 1, 1).data);
 		createCube(gridPos);
 		createSearchInput(gridPos);	
 	});

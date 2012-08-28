@@ -1,0 +1,101 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+	<head>
+	
+	<title>BDD tests</title>
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js"></script>
+	<script type="text/javascript" src="js/jquery.simulate.js"></script>
+	<script type="text/javascript" src="js/color.jQuery.js"></script>
+	<script type="text/javascript" src="js/testConsole.js"></script>
+	<script type="text/javascript" src="js/testHarness.js"></script>
+	<script type="text/javascript" >
+       
+		$(function(){
+		    
+		    testHarness.executeScenarios({
+				
+		        theUserCanCreateAStack: {
+					
+		            "Given the user has opened the stack page": function(testSandbox){
+		                this.loadPage("/stacks.htm");
+						
+		            },
+					
+					"And the canvas is visible" : function() {
+						
+						
+						this.waitForElement("#extrusion");
+						
+					},
+					
+		            "When the user clicks the canvas": function(testSandbox){
+						
+						$("#extrusion", testSandbox.document).simulate("click", {clientX : 100, clientY : 100});
+		            },
+					
+		            "Then the user sees an input field": function(testSandbox){
+		            
+		            	return ($("input", testSandbox.document).length > 0);
+		            
+		            }
+		        }
+		    });
+		    
+		});
+   	
+	</script>
+	<style type="text/css">
+			
+			html, body {
+				
+				font-family: verdana;
+				padding: 0;
+				margin: 0;
+				height: 100%;
+				width: 100%;
+				
+			}
+			
+			#testConsole {
+				
+				background:  #000 -webkit-gradient(linear, 0% 0%, 0% 15%, from(rgba(255, 255, 255, 0.2)), to(rgba(255, 255, 255, 0.4)));
+				bottom: 0;
+				color: #fff;
+				cursor: pointer;
+				left: 0;
+				height: 80px;
+				opacity: 0.9;
+				overflow: hidden;
+				padding: 10px;
+				position: fixed;
+				width: 100%;
+				
+			}
+			
+			#testEnvironment {
+				
+				border: 0;
+				
+			}
+			
+            #steps {
+                bottom: 10px;
+                left: 10px;
+                position: absolute;
+            }
+			
+			
+			
+		</style>
+	
+	</head>
+	
+	<body>
+		<iframe src ="blank.htm" width="100%" height="100%" id="testEnvironment">
+			<p>Your browser does not support iframes so cssUnit will not work.</p>
+		</iframe>
+	</body>
+
+</html>
