@@ -1,5 +1,5 @@
 'use strict'
-require(["IsometricMap", "Stacks"], function(IsometricMap, Stacks) {
+require(["IsometricMap", "Stacks", "helpPanel"], function(IsometricMap, Stacks, helpPanel) {
 
 
 	

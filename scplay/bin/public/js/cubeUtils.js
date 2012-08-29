@@ -5,6 +5,7 @@ define(function() {
 		paintOnCanvas,
 		forEachVector,
 		forEachVectorPair,
+		shadeColor,
 		createSquareVectors,
 		getTileFromMousePos;
 	
@@ -12,12 +13,13 @@ define(function() {
 		var paths = [];
 		paths.unshift({vectors : path, intensity : 0});
 		
-		
+		var baseIntensity = 0.9
 		forEachVectorPair(path, function(x, y, x1, y1) {
 			if(x !== x1) {
+				baseIntensity = baseIntensity - 0.2;
 				var newWall = {
 					vectors : [],
-					intensity : 0.4
+					intensity : baseIntensity
 				};
 				newWall.vectors.push(x, y, x1, y1, x1, y1-extrusion, x, y-extrusion);
 				paths.unshift(newWall);
@@ -40,17 +42,17 @@ define(function() {
 		opacity = opacity || 1;
 		while(pathCount--) {
 		
+			var newShade = shadeColor(baseColor, (pathCount*20));
 			canvas.beginPath();
 			forEachVector(paths[pathCount].vectors, function(x, y) {
 				canvas.lineTo(x, y);
 			});
 			canvas.lineWidth = 1;
-			canvas.fillStyle = "rgba("+baseColor[0]
-			+","+baseColor[1]
-			+","+baseColor[2]
-			+","+paths[pathCount].intensity*opacity
+			canvas.fillStyle = "rgba("+newShade.R
+			+","+newShade.G
+			+","+newShade.B
+			+","+opacity
 			+")";
-			canvas.stroke();
 			canvas.fill();
 		
 		};
@@ -75,6 +77,20 @@ define(function() {
 			}
 		}
 	
+	};
+	
+	shadeColor = function(color, shade) {
+		//var colorInt = parseInt(color.substring(1),16);
+		var newShade = {};
+		newShade.R = color[0];
+		newShade.G = color[1];
+		newShade.B = color[2];
+	
+		newShade.R = newShade.R + Math.floor((shade/255)*newShade.R);
+		newShade.G = newShade.G + Math.floor((shade/255)*newShade.G);
+		newShade.B = newShade.B + Math.floor((shade/255)*newShade.B);
+	
+		return newShade;
 	};
 	
 	createSquareVectors = function(oX, oY) {

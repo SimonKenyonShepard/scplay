@@ -1,63 +1,35 @@
 'use strict'
 require(["renderer", "cubeUtils", "stacksCanvas"], function(renderer, cubeUtils, stacksCanvas) {
 
-	var currentMousePos = {};
-	var canvas = stacksCanvas.get(0).getContext("2d");
-	stacksCanvas.bind("mousewheel", function(event, delta) {
-		
-		renderer.zoom(delta/120, event.clientX, event.clientY);
-					
-	});
-	stacksCanvas.mousemove(function(event) {
-		currentMousePos = {
-			x: event.pageX,
-			y: event.pageY
-		};
-	});
-	var backgroundGrid = function(canvas) {
+	var helpPanel = $(".help"); 
+	$(document).bind("newStack",  function(event, stack) {
 	
-		var grid = new Image(),
-			pattern;
-		grid.src = '/images/gridBG2.png';
-		grid.onload = function(){
-		
-			pattern = canvas.createPattern(grid,'repeat');
-		
-		};
-		  
-		return function(canvas, width, height) {
-		
-			if(grid) {
-			
-				canvas.fillStyle = pattern;
-				canvas.fillRect(0, 0, width, height); 
-				
+		helpPanel.text("Please select tracks from below to add to your new stack");
+		SC.get('/tracks', { limit: 100 }, function(SCtracks) {
+			var tracksDiv = $("#tracks");
+				if(tracksDiv.length === 0) {
+				tracksDiv = $("<div/>", {
+					id : "tracks"
+				}).appendTo("#helpPanel");
 			}
-		
-		};
-	
-	};
-	
-	var gridSquareHighLight = function(canvas) {
+			var trackList = "<ul>";
+			for(var i =0; i < SCtracks.length; i++) {
+				var duration = Math.round((SCtracks[i].duration/1000)/60);
+				trackList += "<li>"+SCtracks[i].title+", "+duration+"m</li>";
+			}
+			trackList += "</ul>";
+			tracksDiv.unbind("click");
+			tracksDiv.html(trackList).click(function(event) {
 				
-		var x = currentMousePos.x || 0,
-		y = currentMousePos.y || 0;
-
-		var gridPos = cubeUtils.getTileFromMousePos(x, y, canvas.getImageData(x, y, 1, 1).data);
+				var duration = Math.round((SCtracks[$(event.target).index()].duration/1000)/60);
+				stack.addHeight(duration*5);
+				stack.setLabel(event.target.innerText);
+			});
+		});
 		
-		var squareVectors = cubeUtils.createSquareVectors(gridPos.X, gridPos.Y);
-		canvas.moveTo(squareVectors[0], squareVectors[1]);
-		canvas.lineTo(squareVectors[2], squareVectors[3]);
-		canvas.lineTo(squareVectors[4], squareVectors[5]);
-		canvas.lineTo(squareVectors[6], squareVectors[7]);
-		canvas.lineTo(squareVectors[8], squareVectors[9]);
-		canvas.strokeStyle = "#00f";
-		canvas.stroke();
 	
-	};
+	});
 	
-	renderer.objectGraph.backgroundGrid = backgroundGrid(canvas);
-	renderer.objectGraph.highLight = gridSquareHighLight;
-	renderer.start();
+	return {};
     
 });

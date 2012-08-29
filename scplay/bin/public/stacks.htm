@@ -20,7 +20,7 @@
 			
 		}
 		
-		input, #autoComplete {
+		input {
 			
 			border: 1px dashed #999;
 			font-size: 14px;
@@ -29,35 +29,38 @@
 			
 		}
 		
-		#autoComplete {
+		#tracks {
 			
-			background-color: #fff;
 			font-size: 14px;
-			max-height : 200px;
+			max-height : 500px;
 			overflow-y: scroll;
-			width: 200px;
-			box-shadow: 1px 1px 18px #888888;
 			
 		}
 		
-		#autoComplete ul {
+		#tracks ul {
 			margin: 5px;
 			padding: 0;
 		}
 		
-		#autoComplete li {
+		#tracks li {
 			
+			background-color: rgba(255, 255, 255, 0.1);
+			cursor: pointer;
 			display: block;
 			margin: 0;
 			padding: 0;
 		}
 		
-		.addIcon {
-			color: blue;		
+		#tracks li:hover {
+		
+			background-color: rgba(255, 255, 255, 0.5);
+		
+		}
+		
+		.play {
+			color: #002A54;		
 			cursor: pointer;
-			font-size: 24px;
-			font-weight: bold;
-			padding: 8px;
+			font-size: 12px;
 		
 		}
 		
@@ -108,7 +111,7 @@
 		<div id="helpPanel">
 			<span>Welcome to <h1>Stacks.</h1></span>
 			<p class="tagLine">Your playlists visualized in 3d.</p>
-			<p>Please select a space with your mouse on the stacks map to start creating your track stack.</p>
+			<p class="help">Please select a space with your mouse on the stacks map to start creating your track stack.</p>
 		</div>
 	</body>
 </html>
