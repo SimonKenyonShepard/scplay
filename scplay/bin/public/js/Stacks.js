@@ -5,7 +5,9 @@ require(["renderer", "cubeUtils", "stacksCanvas"], function(renderer, cubeUtils,
 	cube,
 	cubes = [],
 	createCube,
-	createPlayButton;
+	createPlayButton,
+	renderStacks,
+	saveStacks;
 	
 	SC.initialize({
 		client_id: "29a8c4627dba0eae2bdfac4552946526",
@@ -15,19 +17,35 @@ require(["renderer", "cubeUtils", "stacksCanvas"], function(renderer, cubeUtils,
 	stacksCanvas.click(function(event) {
 		var gridPos = cubeUtils.getTileFromMousePos(event.pageX, event.pageY, canvas.getImageData(event.clientX, event.clientY, 1, 1).data);
 		var newCube = createCube(gridPos);
+		renderer.objectGraph["cubesRender"] = renderStacks;
 		$(document).trigger("newStack", [newCube]);
+		saveStacks();
 	});
 	
-	cube = function(oX, oY, cubeUtils) {
+	saveStacks = function() {
+	
+		var stacks = [];
+		for(var i = 0; i < cubes.length; i++) {
+		
+			stacks.push(cubes[i].saveCube());
+		
+		}
+		$.post('/savestacks', { data : JSON.stringify(stacks) });
+	
+	};
+	
+	cube = function(oX, oY, cubeUtils, baseColour, height, labels) {
 		
 		var baseVectors = cubeUtils.createSquareVectors(oX, oY),
-			baseColor = cubeUtils.generateColour(),
+			baseColor = baseColour || cubeUtils.generateColour(),
 			opacity = 0,
-			labels = [],
-			height = 1,
-			currentHeight = 1,
+			labels = labels || [],
+			height = height || 1,
+			currentHeight = height || 1,
 			addHeight,
 			setLabel,
+			getXY,
+			saveCube,
 			playButton = createPlayButton(oX, oY);
 			
 			addHeight = function(newHeight) {
@@ -39,17 +57,39 @@ require(["renderer", "cubeUtils", "stacksCanvas"], function(renderer, cubeUtils,
 			
 			};
 			
+			getXY = function() {
+			
+				return {x : oX, y : oY};
+			
+			};
+			
 			setLabel = function(newLabel) {
 			
 				labels.push({label : newLabel, y : oY+22-height});
 			
 			};
 			
+			saveCube = function() {
+			
+				return {
+				
+					x : oX,
+					y : oY,
+					height: height,
+					baseColour : baseColor,
+					labels : labels
+				
+				};
+			
+			};
+			
 		
 		return  {
-		
+			
+			saveCube : saveCube,
 			addHeight : addHeight,
 			setLabel : setLabel,
+			getXY : getXY,
 			render : function(canvas) {
 				if(opacity < 1) {
 					opacity = opacity+0.25;
@@ -77,9 +117,27 @@ require(["renderer", "cubeUtils", "stacksCanvas"], function(renderer, cubeUtils,
 	createCube = function(gridPos) {
 				
 		cubes.push(new cube(gridPos.X, gridPos.Y, cubeUtils));
-		renderer.objectGraph["square"+cubes.length] = cubes[cubes.length-1].render;
 		return cubes[cubes.length-1];
 					
+	};
+	
+	renderStacks = function(canvas) {
+	
+		cubes.sort(function(a, b) {
+		
+			var posA = a.getXY();
+			posA = String(posA.y) + String(posA.x);
+			var posB = b.getXY();
+			posB = String(posB.y) + String(posB.x);
+			return posA - posB;
+		
+		});
+		for(var i = 0; i < cubes.length; i++) {
+		
+			cubes[i].render(canvas);
+		
+		}
+	
 	};
 	
 	createPlayButton = function(X, Y) {

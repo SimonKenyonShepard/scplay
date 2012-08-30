@@ -3,7 +3,7 @@ require(["renderer", "cubeUtils", "stacksCanvas"], function(renderer, cubeUtils,
 
 	var helpPanel = $(".help"); 
 	$(document).bind("newStack",  function(event, stack) {
-	
+		
 		helpPanel.text("Please select tracks from below to add to your new stack");
 		SC.get('/tracks', { limit: 100 }, function(SCtracks) {
 			var tracksDiv = $("#tracks");

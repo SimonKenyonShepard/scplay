@@ -99,7 +99,7 @@ define(function() {
 		var colours = [194, 92, 49,
 						78, 106, 130,
 						222, 168, 99, 
-						255, 227, 182,
+						217, 121, 4,
 						168, 77, 129,
 						225, 202, 83,
 						255, 232, 122,
@@ -107,7 +107,6 @@ define(function() {
 						229, 39, 56,
 						166, 20, 20], 
 		randVal = Math.floor(Math.random() * (9 - 1 + 1) + 1)*3;
-		console.log(randVal);
 		return [colours[randVal],colours[randVal+1],colours[randVal+2]];
 	
 	};
