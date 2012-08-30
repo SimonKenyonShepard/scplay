@@ -7,7 +7,8 @@ define(function() {
 		forEachVectorPair,
 		shadeColor,
 		createSquareVectors,
-		getTileFromMousePos;
+		getTileFromMousePos,
+		generateColour;
 	
 	extrudePath = function(path, extrusion) {
 		var paths = [];
@@ -93,6 +94,24 @@ define(function() {
 		return newShade;
 	};
 	
+	generateColour = function() {
+
+		var colours = [194, 92, 49,
+						78, 106, 130,
+						222, 168, 99, 
+						255, 227, 182,
+						168, 77, 129,
+						225, 202, 83,
+						255, 232, 122,
+						70, 127, 113,
+						229, 39, 56,
+						166, 20, 20], 
+		randVal = Math.floor(Math.random() * (9 - 1 + 1) + 1)*3;
+		console.log(randVal);
+		return [colours[randVal],colours[randVal+1],colours[randVal+2]];
+	
+	};
+	
 	createSquareVectors = function(oX, oY) {
 	
 		var tileWidth = 76;
@@ -145,7 +164,8 @@ define(function() {
 		extrudePath : extrudePath,
 		paintOnCanvas : paintOnCanvas,
 		createSquareVectors : createSquareVectors,
-		getTileFromMousePos : getTileFromMousePos
+		getTileFromMousePos : getTileFromMousePos,
+		generateColour : generateColour
 	
 	};
 	

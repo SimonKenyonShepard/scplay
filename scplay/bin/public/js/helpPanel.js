@@ -21,8 +21,8 @@ require(["renderer", "cubeUtils", "stacksCanvas"], function(renderer, cubeUtils,
 			tracksDiv.unbind("click");
 			tracksDiv.html(trackList).click(function(event) {
 				
-				var duration = Math.round((SCtracks[$(event.target).index()].duration/1000)/60);
-				stack.addHeight(duration*5);
+				var duration = Math.round((SCtracks[$(event.target).index()].duration/1000)/60) || 1;
+				stack.addHeight(duration*8);
 				stack.setLabel(event.target.innerText);
 			});
 		});

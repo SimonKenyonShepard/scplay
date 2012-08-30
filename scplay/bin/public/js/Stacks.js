@@ -21,7 +21,7 @@ require(["renderer", "cubeUtils", "stacksCanvas"], function(renderer, cubeUtils,
 	cube = function(oX, oY, cubeUtils) {
 		
 		var baseVectors = cubeUtils.createSquareVectors(oX, oY),
-			baseColor = [108,132,173],
+			baseColor = cubeUtils.generateColour(),
 			opacity = 0,
 			labels = [],
 			height = 1,
@@ -35,7 +35,7 @@ require(["renderer", "cubeUtils", "stacksCanvas"], function(renderer, cubeUtils,
 				height = height+newHeight;
 				playButton.animate({
 					top : (oY-height+10)+"px"
-				});
+				}, 200, 'linear');
 			
 			};
 			
