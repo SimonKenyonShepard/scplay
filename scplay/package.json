@@ -1,6 +1,6 @@
 {
   "name": "nodeapps-helloworld",
-  "version": "0.2.0-12",
+  "version": "0.2.0-19",
   "author": {
     "name": "Nodejitsu Inc.",
     "email": "support@nodejitsu.com"
@@ -30,7 +30,8 @@
     }
   ],
   "dependencies": {
-    "mime": "1.2.7"
+    "mime": "1.2.7",
+    "express": "3.0.0rc3"
   },
   "devDependencies": {},
   "engines": {

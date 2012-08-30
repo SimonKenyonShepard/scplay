@@ -7,17 +7,43 @@ require(["renderer", "cubeUtils", "stacksCanvas"], function(renderer, cubeUtils,
 	createCube,
 	createPlayButton,
 	renderStacks,
-	saveStacks;
+	saveStacks,
+	initilize;
 	
-	SC.initialize({
-		client_id: "29a8c4627dba0eae2bdfac4552946526",
-		redirect_uri: "http://scplay.sks.jit.su/auth/"
-	});
+	initilize = function() {
+	
+		renderer.objectGraph["cubesRender"] = renderStacks;
+		SC.initialize({
+			client_id: "29a8c4627dba0eae2bdfac4552946526",
+			redirect_uri: "http://scplay.sks.jit.su/auth/"
+		});
+		
+		$.getJSON('/getStacks', function(data) {
+			
+			for(var i = 0; i < data.length; i++) {
+				
+				cubes.push(new cube(data[i].x,
+									data[i].y,
+									cubeUtils,
+									data[i].baseColour,
+									data[i].height,
+									data[i].labels,
+									false)
+						);
+			};
+			console.log(cubes[0].getXY(),cubes[1].getXY(), cubes[2].getXY());
+		});
+	
+	};
 	
 	stacksCanvas.click(function(event) {
 		var gridPos = cubeUtils.getTileFromMousePos(event.pageX, event.pageY, canvas.getImageData(event.clientX, event.clientY, 1, 1).data);
+		for(var i = 0; i < cubes.length; i++) {
+		
+			cubes[i].setCurrent(false);
+		
+		}
 		var newCube = createCube(gridPos);
-		renderer.objectGraph["cubesRender"] = renderStacks;
 		$(document).trigger("newStack", [newCube]);
 		saveStacks();
 	});
@@ -34,7 +60,7 @@ require(["renderer", "cubeUtils", "stacksCanvas"], function(renderer, cubeUtils,
 	
 	};
 	
-	cube = function(oX, oY, cubeUtils, baseColour, height, labels) {
+	cube = function(oX, oY, cubeUtils, baseColour, height, labels, current) {
 		
 		var baseVectors = cubeUtils.createSquareVectors(oX, oY),
 			baseColor = baseColour || cubeUtils.generateColour(),
@@ -46,7 +72,9 @@ require(["renderer", "cubeUtils", "stacksCanvas"], function(renderer, cubeUtils,
 			setLabel,
 			getXY,
 			saveCube,
-			playButton = createPlayButton(oX, oY);
+			current = current === false ? false : true,
+			setCurrent,
+			playButton = createPlayButton(oX, oY, height);
 			
 			addHeight = function(newHeight) {
 			
@@ -66,6 +94,13 @@ require(["renderer", "cubeUtils", "stacksCanvas"], function(renderer, cubeUtils,
 			setLabel = function(newLabel) {
 			
 				labels.push({label : newLabel, y : oY+22-height});
+				saveStacks();
+			
+			};
+			
+			setCurrent = function(state) {
+			
+				current = state;
 			
 			};
 			
@@ -86,6 +121,7 @@ require(["renderer", "cubeUtils", "stacksCanvas"], function(renderer, cubeUtils,
 		
 		return  {
 			
+			setCurrent : setCurrent,
 			saveCube : saveCube,
 			addHeight : addHeight,
 			setLabel : setLabel,
@@ -100,13 +136,14 @@ require(["renderer", "cubeUtils", "stacksCanvas"], function(renderer, cubeUtils,
 						currentHeight = height;
 					} else {
 						currentHeight = nextHeight;
-						//currentHeight = currentHeight + 3;
 					}
 				}
 				cubeUtils.paintOnCanvas(cubeUtils.extrudePath(baseVectors, currentHeight), baseColor, canvas, opacity);
-				for(var i = 0; i < labels.length; i++) {
-					canvas.font = "bold 10px Helvetica";
-					canvas.fillText("-"+labels[i].label, oX + 80, labels[i].y);
+				if(current) {
+					for(var i = 0; i < labels.length; i++) {
+						canvas.font = "bold 10px Helvetica";
+						canvas.fillText("-"+labels[i].label, oX + 80, labels[i].y);
+					}
 				}
 				
 			}
@@ -140,15 +177,20 @@ require(["renderer", "cubeUtils", "stacksCanvas"], function(renderer, cubeUtils,
 	
 	};
 	
-	createPlayButton = function(X, Y) {
+	createPlayButton = function(x, y, height) {
 		return $("<div class='play'>&#9658;</div>")
 			.attr("title", "click here to play this stack.")
 			.css({
 				position : "absolute",
-				top : (Y+10)+"px",
-				left : (X+35)+"px"
+				top : (y+10-height)+"px",
+				left : (x+35)+"px"
+			})
+			.hover(function() {
+				//current = true;
 			})
 			.appendTo("body");
 	};
-    
+	setTimeout(function() {
+		initilize();
+    }, 100);
 });

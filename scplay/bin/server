@@ -1,6 +1,42 @@
 #!/usr/bin/env node
 
-var express = require('express');
+var express = require('express'),
+	fs = require('fs');
+
 var app = express();
+app.use(express.bodyParser());
 app.use(express.static(__dirname + '/public'));
+app.post("/savestacks", function(request, response) {
+	fs.writeFile("stacks.json", request.body.data, function(err) {
+    	if(err) {
+        	console.log(err);
+    	} else {
+        	response.writeHead(200, {'Content-Type': 'text/html'});
+			response.end('StackData Saved');
+    	}
+	});
+
+});
+
+app.get("/getstacks", function(request, response) {
+	fs.readFile('stacks.json', 'utf8', function (err,data) {
+  		if (err) {
+    		return console.log(err);
+  		}
+  		response.writeHead(200, {'Content-Type': 'application/json'});
+		response.end(data);
+	});
+
+});
+
+app.get("/clearstacks", function(request, response) {
+	fs.writeFile("stacks.json", "[]", function(err) {
+    	if(err) {
+        	console.log(err);
+    	} else {
+        	response.writeHead(200, {'Content-Type': 'text/html'});
+			response.end('StackData cleared');
+    	}
+	});
+});
 app.listen(8080);
