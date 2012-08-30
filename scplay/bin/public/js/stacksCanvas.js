@@ -1,13 +1,8 @@
 'use strict'
 define(function() {
-	
-	var canvasRender = $("<canvas></canvas>", {
-		id : "extrusion"
-	}).attr({
-		height : $(window).height(),
-		width: $(window).width()
-	}).appendTo(document.body);
-
+	var canvasRender = $("#extrusion");
+	canvasRender.get(0).width = $(window).width();
+	canvasRender.get(0).height = $(window).height();
 	return canvasRender;
 	
 });
