@@ -54,11 +54,13 @@ require(["renderer", "cubeUtils", "stacksCanvas"], function(renderer, cubeUtils,
 				if(opacity < 1) {
 					opacity = opacity+0.25;
 				}
-				if(currentHeight < height) {	
-					if(currentHeight+3 > height) {
+				if(currentHeight < height) {
+					var nextHeight = currentHeight+((height - currentHeight)/3);
+					if(nextHeight > height) {
 						currentHeight = height;
 					} else {
-						currentHeight = currentHeight + 3;
+						currentHeight = nextHeight;
+						//currentHeight = currentHeight + 3;
 					}
 				}
 				cubeUtils.paintOnCanvas(cubeUtils.extrudePath(baseVectors, currentHeight), baseColor, canvas, opacity);
@@ -82,6 +84,7 @@ require(["renderer", "cubeUtils", "stacksCanvas"], function(renderer, cubeUtils,
 	
 	createPlayButton = function(X, Y) {
 		return $("<div class='play'>&#9658;</div>")
+			.attr("title", "click here to play this stack.")
 			.css({
 				position : "absolute",
 				top : (Y+10)+"px",
