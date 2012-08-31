@@ -31,7 +31,6 @@ require(["renderer", "cubeUtils", "stacksCanvas"], function(renderer, cubeUtils,
 									false)
 						);
 			};
-			console.log(cubes[0].getXY(),cubes[1].getXY(), cubes[2].getXY());
 		});
 	
 	};

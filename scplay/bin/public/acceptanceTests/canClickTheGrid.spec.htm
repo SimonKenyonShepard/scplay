@@ -34,10 +34,16 @@
 						
 						$("#extrusion", testSandbox.document).simulate("click", {clientX : 100, clientY : 100});
 		            },
-					
-		            "Then the user sees an input field": function(testSandbox){
 		            
-		            	return ($("input", testSandbox.document).length > 0);
+		            "And the tracks list loads field": function(testSandbox){
+		            
+		            	this.waitForElement("#tracks");
+		            
+		            },
+					
+		            "Then the tracksList has 100 items": function(testSandbox){
+		            
+		            	return ($("#tracks li", testSandbox.document).length === 100);
 		            
 		            }
 		        }
